@@ -16,7 +16,7 @@ namespace BattleShip
 
     class DisplayBoard
     {
-        public string[] _boardLayout;
+        //public string[] _boardLayout;
     }
 
     class Program
@@ -28,12 +28,12 @@ namespace BattleShip
         static void Main(string[] args)
         {
             GameBoard playerBoard;
-            DisplayBoard playerDisplay;
+            //DisplayBoard playerDisplay;
 
-            playerBoard = InitialiseGameBoard(); //Initialising gameboard state
+            playerBoard = InitialisePlayerBoard(); //Initialising gameboard state
             InitialisePositionalMarkers();
 
-            PrintGameBoard(playerBoard); //Displaying current board state.
+            PrintPlayerBoard(playerBoard); //Displaying current board state.
 
             PlaceTokens(playerBoard);
 
@@ -58,13 +58,29 @@ namespace BattleShip
                     if (isValid == true)
                     {
                         inGameBoard._boardLayout[x] = "V";
+                        break;
                     }
                 }
-                PrintGameBoard(inGameBoard);
+                while (isValid == false)
+                {
+                    Console.WriteLine("\nError\nPlease enter a valid co-ordinate: ");
+                    inputCoord = Console.ReadLine().ToUpper();
+                    for (int o = 0; o < GameBoard._boardPositionalMarkers.Length; o++)
+                    {
+                        checkedCoord = GameBoard._boardPositionalMarkers[o];
+                        isValid = string.Equals(checkedCoord, inputCoord);
+                        if (isValid == true)
+                        {
+                            inGameBoard._boardLayout[o] = "V";
+                            break;
+                        }
+                    }
+                }
+                PrintPlayerBoard(inGameBoard);
             }
         }
 
-        static void PrintGameBoard(GameBoard boardToDisplay)
+        static void PrintPlayerBoard(GameBoard boardToDisplay)
         {
             string tmp = "";
             for (int x = 0; x < 5; x++)
@@ -79,7 +95,7 @@ namespace BattleShip
             ////////////
         }
 
-        static GameBoard InitialiseGameBoard()
+        static GameBoard InitialisePlayerBoard()
         {
             GameBoard gameBoards = new GameBoard();
             //Game board initialised to 5x5 grid
