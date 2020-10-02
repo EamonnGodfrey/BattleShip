@@ -2,19 +2,6 @@
 
 namespace BattleShip
 {
-    class Board
-    {
-        public static string[,] _initialBoardState;
-
-        public static string[,] _boardPositionalMarkers;
-        public static int _gridSize;
-
-    }
-    class GameBoard : Board
-    {
-        public string[,] _boardLayout;
-    }
-
     class Program
     {
         //
@@ -30,15 +17,14 @@ namespace BattleShip
             //Console.Write("EnterPlayerGridSize: ");
             //int.TryParse(Console.ReadLine(), out gridSize);   Player Controlled Grid size
             gridSize += 1;
+
             Board._gridSize = gridSize;
             
-
             playerBoard = InitialisePlayerBoard();              //Initialising all gameboard states
             playerDisplayBoard = InitialisePlayerBoard();
             vsBoard = InitialisePlayerBoard();
             vsDisplayBoard = InitialisePlayerBoard();
 
-            
             InitialisePositionalMarkers();                    //InitialisePositionalMarkers();
             
             PrintPlayerBoard(playerBoard);                //Displaying current board state.
