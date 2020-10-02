@@ -2,6 +2,12 @@
 
 namespace BattleShip
 {
+    class Board
+    {
+        public int gridSize;
+
+
+    }
     class GameBoard
     {
         public static string[,] _initialBoardState;
@@ -12,7 +18,7 @@ namespace BattleShip
 
     class DisplayBoard
     {
-        //public string[] _boardLayout;
+
     }
 
     class Program
@@ -23,16 +29,23 @@ namespace BattleShip
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            GameBoard playerBoard;
+            GameBoard playerBoard, playerDisplayBoard, vsBoard, vsDisplayBoard;
+            
+
             int gridSize = 5;
             gridSize += 1;
             //DisplayBoard playerDisplay;
 
-            playerBoard = InitialisePlayerBoard(gridSize);   //Initialising gameboard state
-            InitialisePositionalMarkers(gridSize);          //InitialisePositionalMarkers();
-            
-            PrintPlayerBoard(playerBoard, gridSize);      //Displaying current board state.
+            playerBoard = InitialisePlayerBoard(gridSize);              //Initialising all gameboard states
+            playerDisplayBoard = InitialisePlayerBoard(gridSize);
+            vsBoard = InitialisePlayerBoard(gridSize);
+            vsDisplayBoard = InitialisePlayerBoard(gridSize);
 
+            
+            InitialisePositionalMarkers(gridSize);                    //InitialisePositionalMarkers();
+            
+            PrintPlayerBoard(playerBoard, gridSize);                //Displaying current board state.
+            PrintPlayerBoard(playerDisplayBoard, gridSize);
             
             PlaceTokens(playerBoard, gridSize);
 
@@ -62,8 +75,15 @@ namespace BattleShip
                         isValid = (string.Equals(checkedCoord, inputCoord));
                         if (isValid == true)
                         {
-                            inGameBoard._boardLayout[y, x] = "V";
-                            break;
+                            if (inGameBoard._boardLayout[y, x] != "V")
+                            {
+                                inGameBoard._boardLayout[y, x] = "V";
+                                break;
+                            }
+                            else
+                            { 
+                                isValid = false;
+                            }
                         }
                     }
                     if (isValid == true)
@@ -87,8 +107,15 @@ namespace BattleShip
                             isValid = (string.Equals(checkedCoord, inputCoord));
                             if (isValid == true)
                             {
-                                inGameBoard._boardLayout[y, x] = "V";
-                                break;
+                                if (inGameBoard._boardLayout[y, x] != "V")
+                                {
+                                    inGameBoard._boardLayout[y, x] = "V";
+                                    break;
+                                }
+                                else
+                                {
+                                    isValid = false;
+                                }
                             }
                         }
                         if (isValid == true)
@@ -113,7 +140,7 @@ namespace BattleShip
                 }
                 Console.WriteLine(tmp);
             }
-
+            Console.WriteLine();
         }
 
         static GameBoard InitialisePlayerBoard(int inputGridSize)
@@ -122,7 +149,6 @@ namespace BattleShip
             GameBoard._initialBoardState = new string[inputGridSize, inputGridSize];
 
             char rank = 'A';
-            //char file = '1';
 
             for (int y = 0; y < inputGridSize; y++)
             {
@@ -135,7 +161,6 @@ namespace BattleShip
                     else if (y == 0 && x != 0)
                     {
                         GameBoard._initialBoardState[y, x] = Convert.ToString(x);
-                        //++file;
                     }
                     else if (y != 0 && x == 0)
                     {
@@ -150,9 +175,6 @@ namespace BattleShip
             }
             playerBoard._boardLayout = GameBoard._initialBoardState;
             return playerBoard;
-
-
-
         }
         static void InitialisePositionalMarkers(int inputGridSize)
         {
