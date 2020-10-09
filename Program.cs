@@ -13,12 +13,14 @@ namespace BattleShip
             GameBoard playerBoard, playerDisplayBoard, vsBoard, vsDisplayBoard;
             
 
-            int gridSize = 10;
-            //Console.Write("EnterPlayerGridSize: ");
-            //int.TryParse(Console.ReadLine(), out gridSize);   Player Controlled Grid size
-            gridSize += 1;
+            int gridSize = 5;
+            //Console.Write("Enter the size of the grid you wish to play on (size 10 is 'standard'): ");
+            //Board.GridSize = Convert.ToInt32(Console.ReadLine());   //Player Controlled Grid Size. Passed to Board.GridSize
+            
+            
+            Board.GridSize = gridSize;
 
-            Board._gridSize = gridSize;
+            //Board._gridSize = gridSize;
             
             playerBoard = InitialisePlayerBoard();              //Initialising all gameboard states
             playerDisplayBoard = InitialisePlayerBoard();
@@ -27,10 +29,15 @@ namespace BattleShip
 
             InitialisePositionalMarkers();                    //InitialisePositionalMarkers();
             
-            PrintPlayerBoard(playerBoard);                //Displaying current board state.
-            PrintPlayerBoard(playerDisplayBoard);
+            PrintPlayerBoards(playerDisplayBoard, playerBoard);
             
             PlaceTokens(playerBoard);
+            Console.Clear();
+
+            PrintPlayerBoards(playerDisplayBoard, playerBoard);
+            FireSalvo(playerDisplayBoard, playerBoard);
+            FireSalvo(playerDisplayBoard, playerBoard);
+            FireSalvo(playerDisplayBoard, playerBoard);
 
 
 
@@ -38,13 +45,70 @@ namespace BattleShip
         }
         // ...........................MAIN.........................
 
-        static void PlaceTokens(GameBoard inGameBoard)
+        static void FireSalvo(GameBoard displayBoard, GameBoard playerBoard)
         {
-            for (int turn = 0; turn < 4; turn++)
+            int[] gridReference = new int[2];
+            bool loop = true;
+            while (loop) 
+            { 
+                Console.Write("Please enter firing coordinates: ");
+                gridReference = CoordinateGetter(Console.ReadLine());
+                if (displayBoard._boardLayout[gridReference[0], gridReference[1]] != "X")
+                {
+                    if (playerBoard._boardLayout[gridReference[0], gridReference[1]] == "V")
+                    {
+                        displayBoard._boardLayout[gridReference[0], gridReference[1]] = "X";
+                        playerBoard._boardLayout[gridReference[0], gridReference[1]] = "X";
+                        PrintPlayerBoards(displayBoard, playerBoard);
+                        Console.WriteLine("HIT");
+                        loop = false;
+                    }
+                    else
+                    {
+                        displayBoard._boardLayout[gridReference[0], gridReference[1]] = "O";
+                        PrintPlayerBoards(displayBoard, playerBoard);
+                        Console.WriteLine("SPLASH");
+                        loop = false;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("\nAlready fired on co-ordinate");
+                }
+            }
+        }
+
+        static int[] CoordinateGetter(string inputCoord)
+        {
+            int[] coordinates = new int[2];
+            bool isValid = false;
+            string checkedCoord;
+            inputCoord = inputCoord.ToUpper();
+            for (int y = 0; y < Board._gridSize; y++)
             {
-                string inputCoord, checkedCoord;
-                bool isValid = false;
-                Console.Write("\nEnter grid co-ordinates to place token: ");
+                for (int x = 0; x < Board._gridSize; x++)
+                {
+                    checkedCoord = Board._boardPositionalMarkers[y, x];
+                    if (inputCoord == "0")
+                    {
+                        break;
+                    }
+                    isValid = (string.Equals(checkedCoord, inputCoord));
+                    if (isValid == true)
+                    {
+                        coordinates[0] = y;
+                        coordinates[1] = x;
+                        break;
+                    }
+                }
+                if (isValid == true)
+                {
+                    break;
+                }
+            }
+            while (isValid == false)
+            {
+                Console.Write("Error\nPlease enter a valid grid co-ordinate: ");
                 inputCoord = Console.ReadLine().ToUpper();
                 for (int y = 0; y < Board._gridSize; y++)
                 {
@@ -58,15 +122,9 @@ namespace BattleShip
                         isValid = (string.Equals(checkedCoord, inputCoord));
                         if (isValid == true)
                         {
-                            if (inGameBoard._boardLayout[y, x] != "V")
-                            {
-                                inGameBoard._boardLayout[y, x] = "V";
-                                break;
-                            }
-                            else
-                            { 
-                                isValid = false;
-                            }
+                            coordinates[0] = y;
+                            coordinates[1] = x;
+                            break;
                         }
                     }
                     if (isValid == true)
@@ -74,45 +132,38 @@ namespace BattleShip
                         break;
                     }
                 }
-                while (isValid == false)
+            }
+            return coordinates;
+        }
+
+        static void PlaceTokens(GameBoard inGameBoard)
+        {
+            for (int turn = 0; turn < 4; turn++)
+            {
+                bool loop = true;
+                while (loop)
                 {
-                    Console.WriteLine("\nError\nPlease enter a valid co-ordinate: ");
-                    inputCoord = Console.ReadLine().ToUpper();
-                    for (int y = 0; y < Board._gridSize; y++)
+                    int[] gridReference = new int[2];
+                    Console.Write("\nEnter grid co-ordinate to place token: ");
+                    gridReference = CoordinateGetter(Console.ReadLine());
+                    if (inGameBoard._boardLayout[gridReference[0], gridReference[1]] != "V")
                     {
-                        for (int x = 0; x < Board._gridSize; x++)
-                        {
-                            checkedCoord = Board._boardPositionalMarkers[y, x];
-                            if (inputCoord == "0")
-                            {
-                                break;
-                            }
-                            isValid = (string.Equals(checkedCoord, inputCoord));
-                            if (isValid == true)
-                            {
-                                if (inGameBoard._boardLayout[y, x] != "V")
-                                {
-                                    inGameBoard._boardLayout[y, x] = "V";
-                                    break;
-                                }
-                                else
-                                {
-                                    isValid = false;
-                                }
-                            }
-                        }
-                        if (isValid == true)
-                        {
-                            break;
-                        }
+                        inGameBoard._boardLayout[gridReference[0], gridReference[1]] = "V";
+                        PrintSingleBoard(inGameBoard);
+                        loop = false;
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nToken already placed at co-ordinate");
                     }
                 }
-                PrintPlayerBoard(inGameBoard);
             }
         }
+        
         // // // // // // // // // // // // // // // // // // // // // // // //
-        static void PrintPlayerBoard(GameBoard boardToDisplay)
+        static void PrintSingleBoard(GameBoard boardToDisplay)
         {
+            Console.WriteLine();
             string tmp = "";
             for (int y = 0; y < Board._gridSize; y++)
             {
@@ -126,6 +177,18 @@ namespace BattleShip
             Console.WriteLine();
         }
         // // // // // // // // // // // // // // // // // // // // // // // //
+
+        static void PrintPlayerBoards(GameBoard displayBoard, GameBoard playerBoard)
+        {
+            PrintSingleBoard(displayBoard);
+            string tmp = "";
+            for (int x = 0; x < (Board.GridSize * 3)+1; x++)
+            {
+                tmp += "-";
+            }
+            Console.WriteLine(tmp);
+            PrintSingleBoard(playerBoard);
+        }
         static GameBoard InitialisePlayerBoard()
         {
             GameBoard playerBoard = new GameBoard();
