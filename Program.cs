@@ -10,40 +10,37 @@ namespace BattleShip
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            GameBoard playerBoard, playerDisplayBoard, vsBoard, vsDisplayBoard;
-            
+            GameBoard playerOneBoard, playerOneDisplayBoard, playerTwoBoard, playerTwoDisplayBoard;
 
-            int gridSize = 5;
-            //Console.Write("Enter the size of the grid you wish to play on (size 10 is 'standard'): ");
-            //Board.GridSize = Convert.ToInt32(Console.ReadLine());   //Player Controlled Grid Size. Passed to Board.GridSize
-            
-            
-            Board.GridSize = gridSize;
+            InitialiseGame();
+            playerOneBoard = InitialisePlayerBoard();              //Initialising all gameboard states
+            playerOneDisplayBoard = InitialisePlayerBoard();
+            playerTwoBoard = InitialisePlayerBoard();
+            playerTwoDisplayBoard = InitialisePlayerBoard();
+
+
+
+
 
             //Board._gridSize = gridSize;
-            
-            playerBoard = InitialisePlayerBoard();              //Initialising all gameboard states
-            playerDisplayBoard = InitialisePlayerBoard();
-            vsBoard = InitialisePlayerBoard();
-            vsDisplayBoard = InitialisePlayerBoard();
 
-            InitialisePositionalMarkers();                    //InitialisePositionalMarkers();
+            //                   //InitialisePositionalMarkers();
+
+            PrintPlayerBoards(playerOneDisplayBoard, playerOneBoard);
             
-            PrintPlayerBoards(playerDisplayBoard, playerBoard);
-            
-            PlaceTokens(playerBoard);
+            PlaceTokens(playerOneBoard);
             Console.Clear();
 
-            PrintPlayerBoards(playerDisplayBoard, playerBoard);
-            FireSalvo(playerDisplayBoard, playerBoard);
-            FireSalvo(playerDisplayBoard, playerBoard);
-            FireSalvo(playerDisplayBoard, playerBoard);
+            PrintPlayerBoards(playerOneDisplayBoard, playerOneBoard);
+
 
 
 
 
         }
         // ...........................MAIN.........................
+
+
 
         static void FireSalvo(GameBoard displayBoard, GameBoard playerBoard)
         {
@@ -248,6 +245,82 @@ namespace BattleShip
                 }
                 ++rank;
             }
+        }
+        static void InitialiseGame()
+        {
+            IntroPrintLogo();
+            IntroGridSize();
+
+            
+            InitialisePositionalMarkers();
+        }
+        static void IntroGridSize()
+        {
+            Console.Clear();
+            string tmp;
+            int check = 0;
+            Console.WriteLine("Welcome to Battle Ship\n" +
+                              "Please select the size of your board. Available choices are: (a) 5x5, (b) 10x10 , (c) 15x15");
+            Console.Write("Input your selection: ");
+            tmp = Console.ReadLine().ToUpper();
+            switch (tmp)
+            {
+                case "A":
+                    Board.GridSize = 5;
+                    check = 1;
+                    break;
+                case "B":
+                    Board.GridSize = 10;
+                    check = 1;
+                    break;
+                case "C":
+                    Board.GridSize = 15;
+                    check = 1;
+                    break;
+                default:
+                    break;
+            }
+            while (check == 0)
+            {
+                Console.Write("Error. Please select one of the available options, 'a', 'b' or 'c': ");
+                tmp = Console.ReadLine().ToUpper();
+                switch (tmp)
+                {
+                    case "A":
+                        Board.GridSize = 5;
+                        check = 1;
+                        break;
+                    case "B":
+                        Board.GridSize = 10;
+                        check = 1;
+                        break;
+                    case "C":
+                        Board.GridSize = 15;
+                        check = 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        static void IntroPrintLogo()
+        {
+            string intro = "88                                     88                      88          88 \n"  +            
+                            "88                       ,d      ,d    88                      88          \"\" \n"+  
+                            "88                       88      88    88                      88              \n" +
+                            "88,dPPYba,  ,adPPYYba, MM88MMM MM88MMM 88  ,adPPYba, ,adPPYba, 88,dPPYba,  88 8b,dPPYba, \n"+
+                            "88P'    \"8a \"\"     `Y8   88      88    88 a8P_____88 I8[    \"\" 88P'    \"8a 88 88P'    \"8a\n" +
+                            "88       d8 ,adPPPPP88   88      88    88 8PP\"\"\"\"\"\"\"  `\"Y8ba,  88       88 88 88       d8 \n" +
+                            "88b,   ,a8\" 88,    ,88   88,     88,   88 \"8b,   ,aa aa    ]8I 88       88 88 88b,   ,a8\" \n" +
+                            "8Y\"Ybbd8\"'  `\"8bbdP\"Y8   \"Y888   \"Y888 88  `\"Ybbd8\"' `\"YbbdP\"' 88       88 88 88`YbbdP\"' \n" +
+							"		                                                              88\n " +
+							"		                                                              88";
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(intro);
+            Console.Write("Press any key to continue...");
+            Console.ReadKey();
+            
         }
     }
 }
