@@ -12,22 +12,21 @@ namespace BattleShip
         {
             GameBoard playerOneBoard, playerOneDisplayBoard, playerTwoBoard, playerTwoDisplayBoard;
 
-            InitialiseGame();
+            InitialiseGame();                                       //Splash screen and grid size initialisation
             playerOneBoard = InitialisePlayerBoard();              //Initialising all gameboard states
             playerOneDisplayBoard = InitialisePlayerBoard();
             playerTwoBoard = InitialisePlayerBoard();
             playerTwoDisplayBoard = InitialisePlayerBoard();
+            PrintPlayerBoards(playerOneDisplayBoard, playerOneBoard);   //Initial board display
+
+            // // // // // // // // // // // // // // //
 
 
+            int rangeBoy = RangeFinder();
+            Console.WriteLine(rangeBoy);
+            Console.ReadLine();
 
 
-
-            //Board._gridSize = gridSize;
-
-            //                   //InitialisePositionalMarkers();
-
-            PrintPlayerBoards(playerOneDisplayBoard, playerOneBoard);
-            
             PlaceTokens(playerOneBoard);
             Console.Clear();
 
@@ -38,7 +37,7 @@ namespace BattleShip
 
 
         }
-        // ...........................MAIN.........................
+        // ..........................^^MAIN^^........................
 
 
 
@@ -135,31 +134,33 @@ namespace BattleShip
 
         static void PlaceTokens(GameBoard inGameBoard)
         {
-            for (int turn = 0; turn < 4; turn++)
-            {
-                bool loop = true;
-                while (loop)
-                {
-                    int[] gridReference = new int[2];
-                    Console.Write("\nEnter grid co-ordinate to place token: ");
-                    gridReference = CoordinateGetter(Console.ReadLine());
-                    if (inGameBoard._boardLayout[gridReference[0], gridReference[1]] != "V")
-                    {
-                        inGameBoard._boardLayout[gridReference[0], gridReference[1]] = "V";
-                        PrintSingleBoard(inGameBoard);
-                        loop = false;
-                    }
-                    else
-                    {
-                        Console.WriteLine("\nToken already placed at co-ordinate");
-                    }
-                }
-            }
+            
+            
+            //for (int turn = 0; turn < 4; turn++)
+            //{
+            //    bool loop = true;
+            //    while (loop)
+            //    {
+            //        int[] gridReference = new int[2];
+            //        Console.Write("\nEnter grid co-ordinate to place token: ");
+            //        gridReference = CoordinateGetter(Console.ReadLine());
+            //        if (inGameBoard._boardLayout[gridReference[0], gridReference[1]] != "V")
+            //        {
+            //            inGameBoard._boardLayout[gridReference[0], gridReference[1]] = "V";
+            //            PrintSingleBoard(inGameBoard);
+            //            loop = false;
+            //        }
+            //        else
+            //        {
+            //            Console.WriteLine("\nToken already placed at co-ordinate");
+            //        }
+            //    }
+            //}
         }
         
         // // // // // // // // // // // // // // // // // // // // // // // //
         static void PrintSingleBoard(GameBoard boardToDisplay)
-        {
+        {   //Displays a single board given to the method. Uses a 2d for loop to build a string comprised of the 2d array of the board
             Console.WriteLine();
             string tmp = "";
             for (int y = 0; y < Board._gridSize; y++)
@@ -176,7 +177,7 @@ namespace BattleShip
         // // // // // // // // // // // // // // // // // // // // // // // //
 
         static void PrintPlayerBoards(GameBoard displayBoard, GameBoard playerBoard)
-        {
+        {   //Prints two GameBoards given to it, intended to replicate the visual style of a 
             PrintSingleBoard(displayBoard);
             string tmp = "";
             for (int x = 0; x < (Board.GridSize * 3)+1; x++)
@@ -250,8 +251,6 @@ namespace BattleShip
         {
             IntroPrintLogo();
             IntroGridSize();
-
-            
             InitialisePositionalMarkers();
         }
         static void IntroGridSize()
@@ -260,7 +259,7 @@ namespace BattleShip
             string tmp;
             int check = 0;
             Console.WriteLine("Welcome to Battle Ship\n" +
-                              "Please select the size of your board. Available choices are: (a) 5x5, (b) 10x10 , (c) 15x15");
+                              "Please select the size of your board. Available choices are: (a) 5x5, (b) 10x10 (standard) , (c) 15x15");
             Console.Write("Input your selection: ");
             tmp = Console.ReadLine().ToUpper();
             switch (tmp)
@@ -306,7 +305,7 @@ namespace BattleShip
 
         static void IntroPrintLogo()
         {
-            string intro = "88                                     88                      88          88 \n"  +            
+            string intro =  "88                                     88                      88          88 \n"  +            
                             "88                       ,d      ,d    88                      88          \"\" \n"+  
                             "88                       88      88    88                      88              \n" +
                             "88,dPPYba,  ,adPPYYba, MM88MMM MM88MMM 88  ,adPPYba, ,adPPYba, 88,dPPYba,  88 8b,dPPYba, \n"+
@@ -321,6 +320,52 @@ namespace BattleShip
             Console.Write("Press any key to continue...");
             Console.ReadKey();
             
+        }
+
+        static int RangeFinder()
+        {
+            string[] range = new string[0];                     //TODO: Re-go over the WriteLine's to be more better
+            int[] coordA, coordB;
+            int rangeLength = 0;
+            bool isCardinal = false;
+
+            Console.WriteLine("coord 1 : ");                                 
+            coordA = CoordinateGetter(Console.ReadLine());
+
+            Console.WriteLine("coord 2 : ");
+            coordB = CoordinateGetter(Console.ReadLine());
+
+            if (coordA[0] == coordB[0])
+            {
+                isCardinal = true;
+                rangeLength = Math.Abs(coordA[1] - coordB[1]) + 1;
+            }
+            else if (coordA[1] == coordB[1])
+            {
+                isCardinal = true;
+                rangeLength = Math.Abs(coordA[0] - coordB[0]) + 1;
+            }
+            while (isCardinal == false)
+            {
+                Console.WriteLine("Not Cardinal Direction. Ships cannot be placed diagonally");
+
+                Console.WriteLine("coord 1 : ");
+                coordA = CoordinateGetter(Console.ReadLine());
+
+                Console.WriteLine("coord 2 : ");
+                coordB = CoordinateGetter(Console.ReadLine());
+                if (coordA[0] == coordB[0])
+                {
+                    isCardinal = true;
+                    rangeLength = Math.Abs(coordA[1] - coordB[1]) + 1;
+                }
+                else if (coordA[1] == coordB[1])
+                {
+                    isCardinal = true;
+                    rangeLength = Math.Abs(coordA[0] - coordB[0]) + 1;
+                }
+            }            
+            return rangeLength;
         }
     }
 }
