@@ -11,9 +11,14 @@ namespace BattleShip
         static void Main(string[] args)
         {
             GameBoard playerOneBoard, playerOneDisplayBoard, playerTwoBoard, playerTwoDisplayBoard;
+            Battleships[] pOneShips = new Battleships[5];
+            Battleships[] pTwoShips = new Battleships[5];
+            
 
-            InitialiseGame();                                       //Splash screen and grid size initialisation
-            playerOneBoard = InitialisePlayerBoard();              //Initialising all gameboard states
+            InitialiseGame();                                        //Splash screen and grid size initialisation
+            InitialiseShips(pOneShips);                             //Initialising ship lists
+            InitialiseShips(pTwoShips);
+            playerOneBoard = InitialisePlayerBoard();             //Initialising all gameboard states
             playerOneDisplayBoard = InitialisePlayerBoard();
             playerTwoBoard = InitialisePlayerBoard();
             playerTwoDisplayBoard = InitialisePlayerBoard();
@@ -21,16 +26,12 @@ namespace BattleShip
 
             // // // // // // // // // // // // // // //
 
-
-            int rangeBoy = RangeFinder();
-            Console.WriteLine(rangeBoy);
-            Console.ReadLine();
+            PlaceTokens(playerOneBoard, pOneShips);
 
 
-            PlaceTokens(playerOneBoard);
-            Console.Clear();
+            //PlaceTokens(playerOneBoard);
+            //Console.Clear();
 
-            PrintPlayerBoards(playerOneDisplayBoard, playerOneBoard);
 
 
 
@@ -39,7 +40,43 @@ namespace BattleShip
         }
         // ..........................^^MAIN^^........................
 
+        static void InitialiseShips(Battleships[] shipListIN)
+        {
+            for (int x = 0; x < shipListIN.Length; x++)
+            {
+                switch (x)
+                {
+                    case 0:
+                        shipListIN[x] = new Battleships();
+                        shipListIN[x]._id = "Carrier";
+                        shipListIN[x]._shipLength = 5;
+                        break;
+                    case 1:
+                        shipListIN[x] = new Battleships();
+                        shipListIN[x]._id = "Cruiser";
+                        shipListIN[x]._shipLength = 4;
+                        break;
+                    case 2:
+                        shipListIN[x] = new Battleships();
+                        shipListIN[x]._id = "Destroyer";
+                        shipListIN[x]._shipLength = 3;
+                        break;
+                    case 3:
+                        shipListIN[x] = new Battleships();
+                        shipListIN[x]._id = "Submarine";
+                        shipListIN[x]._shipLength = 3;
+                        break;
+                    case 4:
+                        shipListIN[x] = new Battleships();
+                        shipListIN[x]._id = "Patrol Boat";
+                        shipListIN[x]._shipLength = 2;
+                        break;
+                    default:
+                        break;
 
+                }
+            }
+        }
 
         static void FireSalvo(GameBoard displayBoard, GameBoard playerBoard)
         {
@@ -132,10 +169,137 @@ namespace BattleShip
             return coordinates;
         }
 
-        static void PlaceTokens(GameBoard inGameBoard)
+        static void PlaceTokens(GameBoard inGameBoard, Battleships[] inPlayerShips)
         {
+            for (int ship = 0; ship < inPlayerShips.Length; ship++)
+            {
+                int[] gridReference = new int[2];
+                bool shipPlaced = false;
+
+
+                Console.WriteLine("BOARD SETUP\nPlease select an initial co-ord, then a direction for it to extend towards.\n\n");
+                Console.WriteLine($"Ship Length: {inPlayerShips[ship]._shipLength}");
+                Console.Write("Select initial coordinate: ");
+                gridReference = CoordinateGetter(Console.ReadLine());
+                    
+
+                Console.WriteLine("'UP', 'DOWN', 'LEFT', 'RIGHT'");
+                Console.Write("Enter direction to place ship: ");
+                switch (Console.ReadLine().ToUpper())
+                {
+                    case "RIGHT":
+                        if (gridReference[1] + inPlayerShips[ship]._shipLength <= inGameBoard._boardLayout.GetLength(1))    //Check to see that ship can be placed along 
+                        {                                                                                                   // the length of the array
+                            bool isValid = false;
+                            for (int x = gridReference[1]; x < gridReference[1] + inPlayerShips[ship]._shipLength; x++)
+                            {
+                                if (inGameBoard._boardLayout[gridReference[0], x] != "V")
+                                {
+                                    isValid = true;
+                                }
+                                else
+                                {
+                                    isValid = false;                                                                                                                    //adapt code here to other cases. THIS IS WHERE YOU ARE UP TO
+                                    break;
+                                }
+                            }
+                            if(isValid)
+                            {
+                                for (int x = gridReference[1]; x < gridReference[1] + inPlayerShips[ship]._shipLength; x++)
+                                {
+                                    inGameBoard._boardLayout[gridReference[0], x] = "V";
+                                }
+                                shipPlaced = true;
+                            }    
+                        }
+                        break;
+                    case "LEFT":
+                        if (gridReference[1] - inPlayerShips[ship]._shipLength >= 0)
+                        {
+                            bool isValid = false; 
+                            for (int x = gridReference[1]; x > gridReference[1] - inPlayerShips[ship]._shipLength; x--)
+                            {
+                                if (inGameBoard._boardLayout[gridReference[0], x] != "V")
+                                {
+                                    isValid = true;
+                                }
+                                else
+                                {
+                                    isValid = false;
+                                    break;
+                                }
+                            }
+                            if (isValid)
+                            {
+                                for (int x = gridReference[1]; x > gridReference[1] - inPlayerShips[ship]._shipLength; x--)
+                                {
+                                    inGameBoard._boardLayout[gridReference[0], x] = "V";
+                                }
+                                shipPlaced = true;
+                            }
+                        }
+                        break;
+                    case "DOWN":
+                        if (gridReference[0] + inPlayerShips[ship]._shipLength <= inGameBoard._boardLayout.GetLength(0))
+                        {
+                            bool isValid = false;
+                            for (int x = gridReference[0]; x < gridReference[0] + inPlayerShips[ship]._shipLength; x++)
+                            {
+                                if (inGameBoard._boardLayout[x, gridReference[1]] != "V")
+                                {
+                                    isValid = true;
+                                }
+                                else
+                                {
+                                    isValid = false;
+                                    break;
+                                }
+                            }
+                            if (isValid)
+                            {
+                                for (int x = gridReference[0]; x < gridReference[0] + inPlayerShips[ship]._shipLength; x++)
+                                {
+                                    inGameBoard._boardLayout[x, gridReference[1]] = "V";
+                                }
+                                shipPlaced = true;
+                            }                            
+                        }
+                        break;
+                    case "UP":
+                        if (gridReference[0] - inPlayerShips[ship]._shipLength >= 0)
+                        {
+                            bool isValid = false;
+                            for (int x = gridReference[0]; x > gridReference[0] - inPlayerShips[ship]._shipLength; x--)
+                            {
+                                if (inGameBoard._boardLayout[x, gridReference[1]] != "V")
+                                {
+                                    isValid = true;
+                                }
+                                else
+                                {
+                                    isValid = false;
+                                    break;
+                                }                            
+                            }
+                            if (isValid)
+                            {
+                                for (int x = gridReference[0]; x > gridReference[0] - inPlayerShips[ship]._shipLength; x--)
+                                {
+                                    inGameBoard._boardLayout[x, gridReference[1]] = "V";
+                                }
+                                shipPlaced = true;
+                            }
+                        }
+                        break;
+                    default:
+                        shipPlaced = false;
+                        break;
+                }
+                Console.Clear();
+                PrintSingleBoard(inGameBoard);                                
+            }
             
-            
+
             //for (int turn = 0; turn < 4; turn++)
             //{
             //    bool loop = true;
@@ -180,7 +344,7 @@ namespace BattleShip
         {   //Prints two GameBoards given to it, intended to replicate the visual style of a 
             PrintSingleBoard(displayBoard);
             string tmp = "";
-            for (int x = 0; x < (Board.GridSize * 3)+1; x++)
+            for (int x = 0; x < (Board._gridSize * 3)+1; x++)
             {
                 tmp += "-";
             }
@@ -257,7 +421,7 @@ namespace BattleShip
         {
             Console.Clear();
             string tmp;
-            int check = 0;
+            bool check = false;
             Console.WriteLine("Welcome to Battle Ship\n" +
                               "Please select the size of your board. Available choices are: (a) 5x5, (b) 10x10 (standard) , (c) 15x15");
             Console.Write("Input your selection: ");
@@ -266,20 +430,20 @@ namespace BattleShip
             {
                 case "A":
                     Board.GridSize = 5;
-                    check = 1;
+                    check = true;
                     break;
                 case "B":
                     Board.GridSize = 10;
-                    check = 1;
+                    check = true;
                     break;
                 case "C":
                     Board.GridSize = 15;
-                    check = 1;
+                    check = true;
                     break;
                 default:
                     break;
             }
-            while (check == 0)
+            while (check == false)
             {
                 Console.Write("Error. Please select one of the available options, 'a', 'b' or 'c': ");
                 tmp = Console.ReadLine().ToUpper();
@@ -287,15 +451,15 @@ namespace BattleShip
                 {
                     case "A":
                         Board.GridSize = 5;
-                        check = 1;
+                        check = true;
                         break;
                     case "B":
                         Board.GridSize = 10;
-                        check = 1;
+                        check = true;
                         break;
                     case "C":
                         Board.GridSize = 15;
-                        check = 1;
+                        check = true;
                         break;
                     default:
                         break;
@@ -322,9 +486,9 @@ namespace BattleShip
             
         }
 
-        static int RangeFinder()
+        static int RangeFinder() //Actually might delete this whole thing
         {
-            string[] range = new string[0];                     //TODO: Re-go over the WriteLine's to be more better
+                                 //TODO: Re-go over the WriteLine's to be more better
             int[] coordA, coordB;
             int rangeLength = 0;
             bool isCardinal = false;
@@ -333,19 +497,19 @@ namespace BattleShip
             coordA = CoordinateGetter(Console.ReadLine());
 
             Console.WriteLine("coord 2 : ");
-            coordB = CoordinateGetter(Console.ReadLine());
+            coordB = CoordinateGetter(Console.ReadLine());      //Gets two coordinate values from CoordinateGetter
 
-            if (coordA[0] == coordB[0])
+            if (coordA[0] == coordB[0])                         //If the LETTER markers match, then NUMBER side is used to calculate the difference between two points inclusive
             {
                 isCardinal = true;
                 rangeLength = Math.Abs(coordA[1] - coordB[1]) + 1;
             }
-            else if (coordA[1] == coordB[1])
+            else if (coordA[1] == coordB[1])                    //If the NUMBER markers match, then LETTER side is used to calculate the difference between the two points inclusive
             {
                 isCardinal = true;
                 rangeLength = Math.Abs(coordA[0] - coordB[0]) + 1;
             }
-            while (isCardinal == false)
+            while (isCardinal == false)                         //Bool isCardinal is used to check whether the two coordinates are in-line, or cardinal
             {
                 Console.WriteLine("Not Cardinal Direction. Ships cannot be placed diagonally");
 

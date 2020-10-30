@@ -8,11 +8,9 @@ namespace BattleShip
 {
     class Battleships
     {
-        public static int _shipLength;
+        public int _shipLength;
+        public string _id;
 
-        public Battleships(int ShipLength)
-        {
-            _shipLength = ShipLength;
-        }
+
     }
 }

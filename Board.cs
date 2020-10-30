@@ -20,21 +20,9 @@ namespace BattleShip
             }
             set 
             {
-                string entry = Convert.ToString(value);
-                while( !int.TryParse(entry, out _gridSize) || Convert.ToInt32(value) < 5 || Convert.ToInt32(value) > 26)
-                {
-                    Console.Write("Please enter a valid grid size (5-26): ");
-                    entry = Console.ReadLine();
-                    int.TryParse(entry, out value);
-                    ++value;
-                    _gridSize = value;
-                }
                 ++value;
                 _gridSize = value;
             } 
-        }        
-
-        
-
+        }
     }
 }
