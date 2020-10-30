@@ -29,8 +29,11 @@ namespace BattleShip
             PlaceTokens(playerOneBoard, pOneShips);
 
 
-            //PlaceTokens(playerOneBoard);
-            //Console.Clear();
+            bool loop = true;
+            while (loop)
+            {
+                FireSalvo(playerOneDisplayBoard, playerOneBoard);
+            }
 
 
 
@@ -175,153 +178,140 @@ namespace BattleShip
             {
                 int[] gridReference = new int[2];
                 bool shipPlaced = false;
+                Console.WriteLine("BOARD SETUP");
 
-
-                Console.WriteLine("BOARD SETUP\nPlease select an initial co-ord, then a direction for it to extend towards.\n\n");
-                Console.WriteLine($"Ship Length: {inPlayerShips[ship]._shipLength}");
-                Console.Write("Select initial coordinate: ");
-                gridReference = CoordinateGetter(Console.ReadLine());
-                    
-
-                Console.WriteLine("'UP', 'DOWN', 'LEFT', 'RIGHT'");
-                Console.Write("Enter direction to place ship: ");
-                switch (Console.ReadLine().ToUpper())
+                while (shipPlaced == false)
                 {
-                    case "RIGHT":
-                        if (gridReference[1] + inPlayerShips[ship]._shipLength <= inGameBoard._boardLayout.GetLength(1))    //Check to see that ship can be placed along 
-                        {                                                                                                   // the length of the array
-                            bool isValid = false;
-                            for (int x = gridReference[1]; x < gridReference[1] + inPlayerShips[ship]._shipLength; x++)
-                            {
-                                if (inGameBoard._boardLayout[gridReference[0], x] != "V")
-                                {
-                                    isValid = true;
-                                }
-                                else
-                                {
-                                    isValid = false;                                                                                                                    //adapt code here to other cases. THIS IS WHERE YOU ARE UP TO
-                                    break;
-                                }
-                            }
-                            if(isValid)
-                            {
+                    Console.WriteLine("Please select an initial co-ord, then a direction for it to extend towards.\n");
+                    Console.WriteLine($"Ship Name: {inPlayerShips[ship]._id} | Ship Length: {inPlayerShips[ship]._shipLength}");
+                    Console.Write("Select initial coordinate: ");
+                    gridReference = CoordinateGetter(Console.ReadLine());
+
+
+                    Console.WriteLine("'UP', 'DOWN', 'LEFT', 'RIGHT'");
+                    Console.Write("Enter direction to place ship: ");
+                    switch (Console.ReadLine().ToUpper())
+                    {
+                        case "RIGHT":
+                            if (gridReference[1] + inPlayerShips[ship]._shipLength <= inGameBoard._boardLayout.GetLength(1))    //Check to see that ship can be placed along 
+                            {                                                                                                   // the length of the array
+                                bool isValid = false;
                                 for (int x = gridReference[1]; x < gridReference[1] + inPlayerShips[ship]._shipLength; x++)
                                 {
-                                    inGameBoard._boardLayout[gridReference[0], x] = "V";
+                                    if (inGameBoard._boardLayout[gridReference[0], x] != "V")
+                                    {
+                                        isValid = true;
+                                    }
+                                    else
+                                    {
+                                        isValid = false;                                                                                                                    //adapt code here to other cases. THIS IS WHERE YOU ARE UP TO
+                                        break;
+                                    }
                                 }
-                                shipPlaced = true;
-                            }    
-                        }
-                        break;
-                    case "LEFT":
-                        if (gridReference[1] - inPlayerShips[ship]._shipLength >= 0)
-                        {
-                            bool isValid = false; 
-                            for (int x = gridReference[1]; x > gridReference[1] - inPlayerShips[ship]._shipLength; x--)
-                            {
-                                if (inGameBoard._boardLayout[gridReference[0], x] != "V")
+                                if (isValid)
                                 {
-                                    isValid = true;
-                                }
-                                else
-                                {
-                                    isValid = false;
-                                    break;
+                                    for (int x = gridReference[1]; x < gridReference[1] + inPlayerShips[ship]._shipLength; x++)
+                                    {
+                                        inGameBoard._boardLayout[gridReference[0], x] = "V";
+                                    }
+                                    shipPlaced = true;
                                 }
                             }
-                            if (isValid)
+                            break;
+                        case "LEFT":
+                            if (gridReference[1] - inPlayerShips[ship]._shipLength >= 0)
                             {
+                                bool isValid = false;
                                 for (int x = gridReference[1]; x > gridReference[1] - inPlayerShips[ship]._shipLength; x--)
                                 {
-                                    inGameBoard._boardLayout[gridReference[0], x] = "V";
+                                    if (inGameBoard._boardLayout[gridReference[0], x] != "V")
+                                    {
+                                        isValid = true;
+                                    }
+                                    else
+                                    {
+                                        isValid = false;
+                                        break;
+                                    }
                                 }
-                                shipPlaced = true;
-                            }
-                        }
-                        break;
-                    case "DOWN":
-                        if (gridReference[0] + inPlayerShips[ship]._shipLength <= inGameBoard._boardLayout.GetLength(0))
-                        {
-                            bool isValid = false;
-                            for (int x = gridReference[0]; x < gridReference[0] + inPlayerShips[ship]._shipLength; x++)
-                            {
-                                if (inGameBoard._boardLayout[x, gridReference[1]] != "V")
+                                if (isValid)
                                 {
-                                    isValid = true;
-                                }
-                                else
-                                {
-                                    isValid = false;
-                                    break;
+                                    for (int x = gridReference[1]; x > gridReference[1] - inPlayerShips[ship]._shipLength; x--)
+                                    {
+                                        inGameBoard._boardLayout[gridReference[0], x] = "V";
+                                    }
+                                    shipPlaced = true;
                                 }
                             }
-                            if (isValid)
+                            break;
+                        case "DOWN":
+                            if (gridReference[0] + inPlayerShips[ship]._shipLength <= inGameBoard._boardLayout.GetLength(0))
                             {
+                                bool isValid = false;
                                 for (int x = gridReference[0]; x < gridReference[0] + inPlayerShips[ship]._shipLength; x++)
                                 {
-                                    inGameBoard._boardLayout[x, gridReference[1]] = "V";
+                                    if (inGameBoard._boardLayout[x, gridReference[1]] != "V")
+                                    {
+                                        isValid = true;
+                                    }
+                                    else
+                                    {
+                                        isValid = false;
+                                        break;
+                                    }
                                 }
-                                shipPlaced = true;
-                            }                            
-                        }
-                        break;
-                    case "UP":
-                        if (gridReference[0] - inPlayerShips[ship]._shipLength >= 0)
-                        {
-                            bool isValid = false;
-                            for (int x = gridReference[0]; x > gridReference[0] - inPlayerShips[ship]._shipLength; x--)
-                            {
-                                if (inGameBoard._boardLayout[x, gridReference[1]] != "V")
+                                if (isValid)
                                 {
-                                    isValid = true;
+                                    for (int x = gridReference[0]; x < gridReference[0] + inPlayerShips[ship]._shipLength; x++)
+                                    {
+                                        inGameBoard._boardLayout[x, gridReference[1]] = "V";
+                                    }
+                                    shipPlaced = true;
                                 }
-                                else
-                                {
-                                    isValid = false;
-                                    break;
-                                }                            
                             }
-                            if (isValid)
+                            break;
+                        case "UP":
+                            if (gridReference[0] - inPlayerShips[ship]._shipLength >= 0)
                             {
+                                bool isValid = false;
                                 for (int x = gridReference[0]; x > gridReference[0] - inPlayerShips[ship]._shipLength; x--)
                                 {
-                                    inGameBoard._boardLayout[x, gridReference[1]] = "V";
+                                    if (inGameBoard._boardLayout[x, gridReference[1]] != "V")
+                                    {
+                                        isValid = true;
+                                    }
+                                    else
+                                    {
+                                        isValid = false;
+                                        break;
+                                    }
                                 }
-                                shipPlaced = true;
+                                if (isValid)
+                                {
+                                    for (int x = gridReference[0]; x > gridReference[0] - inPlayerShips[ship]._shipLength; x--)
+                                    {
+                                        inGameBoard._boardLayout[x, gridReference[1]] = "V";
+                                    }
+                                    shipPlaced = true;
+                                }
                             }
-                        }
-                        break;
-                    default:
-                        shipPlaced = false;
-                        break;
+                            break;
+                        default:
+                            shipPlaced = false;
+                            break;
+                    }
+                    
+
+                    if (shipPlaced == false)
+                    {
+                        Console.WriteLine("\n-Invalid Placement-");
+                        Console.WriteLine("Please select a valid initial co-ord and ensure the placement does not intersect with another ship \nor extend past the board.");
+                    }
                 }
                 Console.Clear();
-                PrintSingleBoard(inGameBoard);                                
+                PrintSingleBoard(inGameBoard);
             }
-            
-
-            //for (int turn = 0; turn < 4; turn++)
-            //{
-            //    bool loop = true;
-            //    while (loop)
-            //    {
-            //        int[] gridReference = new int[2];
-            //        Console.Write("\nEnter grid co-ordinate to place token: ");
-            //        gridReference = CoordinateGetter(Console.ReadLine());
-            //        if (inGameBoard._boardLayout[gridReference[0], gridReference[1]] != "V")
-            //        {
-            //            inGameBoard._boardLayout[gridReference[0], gridReference[1]] = "V";
-            //            PrintSingleBoard(inGameBoard);
-            //            loop = false;
-            //        }
-            //        else
-            //        {
-            //            Console.WriteLine("\nToken already placed at co-ordinate");
-            //        }
-            //    }
-            //}
         }
-        
         // // // // // // // // // // // // // // // // // // // // // // // //
         static void PrintSingleBoard(GameBoard boardToDisplay)
         {   //Displays a single board given to the method. Uses a 2d for loop to build a string comprised of the 2d array of the board
@@ -484,52 +474,6 @@ namespace BattleShip
             Console.Write("Press any key to continue...");
             Console.ReadKey();
             
-        }
-
-        static int RangeFinder() //Actually might delete this whole thing
-        {
-                                 //TODO: Re-go over the WriteLine's to be more better
-            int[] coordA, coordB;
-            int rangeLength = 0;
-            bool isCardinal = false;
-
-            Console.WriteLine("coord 1 : ");                                 
-            coordA = CoordinateGetter(Console.ReadLine());
-
-            Console.WriteLine("coord 2 : ");
-            coordB = CoordinateGetter(Console.ReadLine());      //Gets two coordinate values from CoordinateGetter
-
-            if (coordA[0] == coordB[0])                         //If the LETTER markers match, then NUMBER side is used to calculate the difference between two points inclusive
-            {
-                isCardinal = true;
-                rangeLength = Math.Abs(coordA[1] - coordB[1]) + 1;
-            }
-            else if (coordA[1] == coordB[1])                    //If the NUMBER markers match, then LETTER side is used to calculate the difference between the two points inclusive
-            {
-                isCardinal = true;
-                rangeLength = Math.Abs(coordA[0] - coordB[0]) + 1;
-            }
-            while (isCardinal == false)                         //Bool isCardinal is used to check whether the two coordinates are in-line, or cardinal
-            {
-                Console.WriteLine("Not Cardinal Direction. Ships cannot be placed diagonally");
-
-                Console.WriteLine("coord 1 : ");
-                coordA = CoordinateGetter(Console.ReadLine());
-
-                Console.WriteLine("coord 2 : ");
-                coordB = CoordinateGetter(Console.ReadLine());
-                if (coordA[0] == coordB[0])
-                {
-                    isCardinal = true;
-                    rangeLength = Math.Abs(coordA[1] - coordB[1]) + 1;
-                }
-                else if (coordA[1] == coordB[1])
-                {
-                    isCardinal = true;
-                    rangeLength = Math.Abs(coordA[0] - coordB[0]) + 1;
-                }
-            }            
-            return rangeLength;
         }
     }
 }
