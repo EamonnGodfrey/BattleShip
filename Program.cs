@@ -14,7 +14,9 @@ namespace BattleShip
             Battleships[] pOneShips = new Battleships[5];
             Battleships[] pTwoShips = new Battleships[5];
             bool gameOver = false;
+            int turnCounter = 0;
 
+            // // // // // // // // // // // // // // //
 
             InitialiseGame();                                        //Splash screen and grid size initialisation
             InitialiseShips(pOneShips);                             //Initialising ship lists
@@ -26,15 +28,30 @@ namespace BattleShip
             PrintPlayerBoards(playerOneDisplayBoard, playerOneBoard);   //Initial board display
 
             // // // // // // // // // // // // // // //
-
+            Console.WriteLine("Player One, place your ships");
+            EnterToContinue();
             PlaceTokens(playerOneBoard, pOneShips);
 
+            Console.WriteLine("Player Two, place your ships");
+            EnterToContinue();
+            PlaceTokens(playerTwoBoard, pTwoShips);
+
+            // // // // // // // // // // // // // // //
             
-            bool loop = false;
-            while (loop == false)
+            while (gameOver == false)
             {
-                FireSalvo(playerOneDisplayBoard, playerOneBoard, pOneShips);
-                loop = WinCondition(pOneShips);
+                ++turnCounter;
+                TurnPreface(turnCounter);
+                FireSalvo(playerOneDisplayBoard, playerOneBoard, playerTwoBoard, pOneShips);    //First player's turn, taking player 1's displayboard and playing board to display, and player 2's playing board to check against
+                gameOver = WinCondition(pOneShips);
+                if (gameOver) { break; }
+
+                ////////////
+                
+                ++turnCounter;
+                TurnPreface(turnCounter);
+                FireSalvo(playerTwoDisplayBoard, playerTwoBoard, playerOneBoard, pTwoShips);    //Second player's turn, taking player 2's displayboard and playing board to display, and player 1's playing board to check against
+                gameOver = WinCondition(pTwoShips);
             }
 
 
@@ -45,7 +62,24 @@ namespace BattleShip
 
         }
         // ..........................^^MAIN^^........................
+        static void TurnPreface(int inTurnCount)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            if (inTurnCount % 2 == 0)
+            {
+                Console.WriteLine();
+                Console.Write("Player Two, Press ENTER to continue...");
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.Write("Player One, press ENTER to continue...");
+                Console.ReadLine();
+            }
 
+        }
         static void InitialiseShips(Battleships[] shipListIN)
         {
             for (int x = 0; x < shipListIN.Length; x++)     //Used to instantiate the Battleships objects
@@ -124,20 +158,22 @@ namespace BattleShip
             return isGameOver;
         }
 
-        static void FireSalvo(GameBoard displayBoard, GameBoard playerBoard, Battleships[] inPlayerShips)
+        static void FireSalvo(GameBoard displayBoard, GameBoard playerBoard, GameBoard vsPlayerBoard, Battleships[] inPlayerShips)
         {
             int[] gridReference = new int[2];
             bool loop = true;
             while (loop) 
-            { 
+            {
+                PrintPlayerBoards(displayBoard, playerBoard);
                 Console.Write("Please enter firing coordinates: ");
+                Console.Clear();
                 gridReference = CoordinateGetter(Console.ReadLine());
                 if (displayBoard._boardLayout[gridReference[0], gridReference[1]] != "X")
                 {
-                    if (playerBoard._boardLayout[gridReference[0], gridReference[1]] == "V")
+                    if (vsPlayerBoard._boardLayout[gridReference[0], gridReference[1]] == "V")
                     {
                         displayBoard._boardLayout[gridReference[0], gridReference[1]] = "X";
-                        playerBoard._boardLayout[gridReference[0], gridReference[1]] = "X";
+                        vsPlayerBoard._boardLayout[gridReference[0], gridReference[1]] = "X";
                         PrintPlayerBoards(displayBoard, playerBoard);
                         Console.WriteLine("HIT");
                         for (int y = 0; y < inPlayerShips.Length; y++)
@@ -150,13 +186,14 @@ namespace BattleShip
                                     if (inPlayerShips[y]._hitsTaken == inPlayerShips[y]._shipLength)
                                     {
                                         Console.WriteLine("||     Battleship Sunk     ||");
+                                        EnterToContinue();
                                         inPlayerShips[y]._shipActive = false;
                                     }
                                     break;
                                 }
                             }
                         }
-
+                        EnterToContinue();
                         loop = false;
                     }
                     else
@@ -164,16 +201,18 @@ namespace BattleShip
                         displayBoard._boardLayout[gridReference[0], gridReference[1]] = "O";
                         PrintPlayerBoards(displayBoard, playerBoard);
                         Console.WriteLine("SPLASH");
+                        EnterToContinue();
                         loop = false;
                     }
                 }
                 else
                 {
                     Console.WriteLine("\nAlready fired on co-ordinate");
+                    EnterToContinue();
                 }
             }
         }
-
+        
         static int[] CoordinateGetter(string inputCoord)
         {
             int[] coordinates = new int[2];
@@ -234,6 +273,8 @@ namespace BattleShip
 
         static void PlaceTokens(GameBoard inGameBoard, Battleships[] inPlayerShips)
         {
+            Console.Clear();
+            PrintSingleBoard(inGameBoard);
             for (int ship = 0; ship < inPlayerShips.Length; ship++)
             {
                 int[] gridReference = new int[2];
@@ -379,6 +420,8 @@ namespace BattleShip
                 Console.Clear();
                 PrintSingleBoard(inGameBoard);
             }
+            EnterToContinue();
+            Console.Clear();
         }
         // // // // // // // // // // // // // // // // // // // // // // // //
         static void PrintSingleBoard(GameBoard boardToDisplay)
@@ -480,7 +523,7 @@ namespace BattleShip
             Console.Clear();
             string tmp;
             bool check = false;
-            Console.WriteLine("Welcome to Battle Ship\n" +
+            Console.WriteLine("\nWelcome to Battle Ship\n" +
                               "Please select the size of your board. Available choices are: (a) 5x5, (b) 10x10 (standard) , (c) 15x15");
             Console.Write("Input your selection: ");
             tmp = Console.ReadLine().ToUpper();
@@ -524,7 +567,11 @@ namespace BattleShip
                 }
             }
         }
-
+        static void EnterToContinue()
+        {
+            Console.Write("\n\nPress ENTER to continue...");
+            Console.ReadLine();
+        }
         static void IntroPrintLogo()
         {
             string intro =  "88                                     88                      88          88 \n"  +            
@@ -537,11 +584,10 @@ namespace BattleShip
                             "8Y\"Ybbd8\"'  `\"8bbdP\"Y8   \"Y888   \"Y888 88  `\"Ybbd8\"' `\"YbbdP\"' 88       88 88 88`YbbdP\"' \n" +
 							"		                                                              88\n " +
 							"		                                                              88";
-            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(intro);
-            Console.Write("Press any key to continue...");
-            Console.ReadKey();
+            EnterToContinue();
             
         }
+        
     }
 }
