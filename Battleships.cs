@@ -10,7 +10,31 @@ namespace BattleShip
     {
         public int _shipLength;
         public string _id;
+        public int[] _columnPosition, _rowPosition;
+        public int _hitsTaken;
+        public bool _shipActive;
 
-
+        public int[] ColumnPosition 
+        { 
+            get 
+            { 
+                return _columnPosition; 
+            } 
+            set 
+            { 
+                _columnPosition = value; 
+            } 
+        }
+        public int[] RowPosition 
+        {
+            get 
+            {
+                return _rowPosition;
+            } 
+            set
+            {
+                _rowPosition = value;
+            }
+        }
     }
 }

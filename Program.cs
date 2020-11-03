@@ -13,7 +13,8 @@ namespace BattleShip
             GameBoard playerOneBoard, playerOneDisplayBoard, playerTwoBoard, playerTwoDisplayBoard;
             Battleships[] pOneShips = new Battleships[5];
             Battleships[] pTwoShips = new Battleships[5];
-            
+            bool gameOver = false;
+
 
             InitialiseGame();                                        //Splash screen and grid size initialisation
             InitialiseShips(pOneShips);                             //Initialising ship lists
@@ -28,16 +29,18 @@ namespace BattleShip
 
             PlaceTokens(playerOneBoard, pOneShips);
 
-
-            bool loop = true;
-            while (loop)
+            
+            bool loop = false;
+            while (loop == false)
             {
-                FireSalvo(playerOneDisplayBoard, playerOneBoard);
+                FireSalvo(playerOneDisplayBoard, playerOneBoard, pOneShips);
+                loop = WinCondition(pOneShips);
             }
 
 
 
-
+            Console.WriteLine("GAME WON");
+            Console.ReadLine();
 
 
         }
@@ -45,34 +48,54 @@ namespace BattleShip
 
         static void InitialiseShips(Battleships[] shipListIN)
         {
-            for (int x = 0; x < shipListIN.Length; x++)
+            for (int x = 0; x < shipListIN.Length; x++)     //Used to instantiate the Battleships objects
             {
-                switch (x)
+                switch (x)      //Battleship list is always Carrier, Cruiser, Destroyer, Submarine, Patrol. Therefore switch is used to instantiate the different battleship types
                 {
                     case 0:
                         shipListIN[x] = new Battleships();
+                        shipListIN[x]._columnPosition = new int[5];
+                        shipListIN[x]._rowPosition = new int[5];
                         shipListIN[x]._id = "Carrier";
                         shipListIN[x]._shipLength = 5;
+                        shipListIN[x]._hitsTaken = 0;
+                        shipListIN[x]._shipActive = true;
                         break;
                     case 1:
                         shipListIN[x] = new Battleships();
+                        shipListIN[x]._columnPosition = new int[4];
+                        shipListIN[x]._rowPosition = new int[4];
                         shipListIN[x]._id = "Cruiser";
                         shipListIN[x]._shipLength = 4;
+                        shipListIN[x]._hitsTaken = 0;
+                        shipListIN[x]._shipActive = true;
                         break;
                     case 2:
                         shipListIN[x] = new Battleships();
+                        shipListIN[x]._columnPosition = new int[3];
+                        shipListIN[x]._rowPosition = new int[3];
                         shipListIN[x]._id = "Destroyer";
                         shipListIN[x]._shipLength = 3;
+                        shipListIN[x]._hitsTaken = 0;
+                        shipListIN[x]._shipActive = true;
                         break;
                     case 3:
                         shipListIN[x] = new Battleships();
+                        shipListIN[x]._columnPosition = new int[3];
+                        shipListIN[x]._rowPosition = new int[3];
                         shipListIN[x]._id = "Submarine";
                         shipListIN[x]._shipLength = 3;
+                        shipListIN[x]._hitsTaken = 0;
+                        shipListIN[x]._shipActive = true;
                         break;
                     case 4:
                         shipListIN[x] = new Battleships();
+                        shipListIN[x]._columnPosition = new int[2];
+                        shipListIN[x]._rowPosition = new int[2];
                         shipListIN[x]._id = "Patrol Boat";
                         shipListIN[x]._shipLength = 2;
+                        shipListIN[x]._hitsTaken = 0;
+                        shipListIN[x]._shipActive = true;
                         break;
                     default:
                         break;
@@ -81,7 +104,27 @@ namespace BattleShip
             }
         }
 
-        static void FireSalvo(GameBoard displayBoard, GameBoard playerBoard)
+        static bool WinCondition(Battleships[] inShipList)
+        {
+            bool isGameOver = false;
+            int activeShips = inShipList.Length;
+
+            for (int y = 0; y < inShipList.Length; y++)
+            {
+                if (inShipList[y]._shipActive == false)
+                {
+                    --activeShips;
+                }
+            }
+            if (activeShips == 0)
+            {
+                isGameOver = true;
+            }
+
+            return isGameOver;
+        }
+
+        static void FireSalvo(GameBoard displayBoard, GameBoard playerBoard, Battleships[] inPlayerShips)
         {
             int[] gridReference = new int[2];
             bool loop = true;
@@ -97,6 +140,23 @@ namespace BattleShip
                         playerBoard._boardLayout[gridReference[0], gridReference[1]] = "X";
                         PrintPlayerBoards(displayBoard, playerBoard);
                         Console.WriteLine("HIT");
+                        for (int y = 0; y < inPlayerShips.Length; y++)
+                        {
+                            for (int x = 0; x < inPlayerShips[y]._shipLength; x++)
+                            {
+                                if (inPlayerShips[y]._rowPosition[x] == gridReference[0] && inPlayerShips[y]._columnPosition[x] == gridReference[1])
+                                {
+                                    ++inPlayerShips[y]._hitsTaken;
+                                    if (inPlayerShips[y]._hitsTaken == inPlayerShips[y]._shipLength)
+                                    {
+                                        Console.WriteLine("||     Battleship Sunk     ||");
+                                        inPlayerShips[y]._shipActive = false;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+
                         loop = false;
                     }
                     else
@@ -194,7 +254,7 @@ namespace BattleShip
                     {
                         case "RIGHT":
                             if (gridReference[1] + inPlayerShips[ship]._shipLength <= inGameBoard._boardLayout.GetLength(1))    //Check to see that ship can be placed along 
-                            {                                                                                                   // the length of the array
+                            {                                                                                                   //the lateral length of the array
                                 bool isValid = false;
                                 for (int x = gridReference[1]; x < gridReference[1] + inPlayerShips[ship]._shipLength; x++)
                                 {
@@ -204,7 +264,7 @@ namespace BattleShip
                                     }
                                     else
                                     {
-                                        isValid = false;                                                                                                                    //adapt code here to other cases. THIS IS WHERE YOU ARE UP TO
+                                        isValid = false;                                                                                                                    
                                         break;
                                     }
                                 }
@@ -213,6 +273,8 @@ namespace BattleShip
                                     for (int x = gridReference[1]; x < gridReference[1] + inPlayerShips[ship]._shipLength; x++)
                                     {
                                         inGameBoard._boardLayout[gridReference[0], x] = "V";
+                                        inPlayerShips[ship].RowPosition[x - gridReference[1]] = gridReference[0];          //Two lines of code trying to assign grid co-ords. Not working currently. YOU ARE HERE
+                                        inPlayerShips[ship].ColumnPosition[x - gridReference[1]] = x;
                                     }
                                     shipPlaced = true;
                                 }
@@ -239,6 +301,8 @@ namespace BattleShip
                                     for (int x = gridReference[1]; x > gridReference[1] - inPlayerShips[ship]._shipLength; x--)
                                     {
                                         inGameBoard._boardLayout[gridReference[0], x] = "V";
+                                        inPlayerShips[ship].RowPosition[gridReference[1] - x] = gridReference[0];
+                                        inPlayerShips[ship].ColumnPosition[gridReference[1] - x] = x;
                                     }
                                     shipPlaced = true;
                                 }
@@ -265,6 +329,8 @@ namespace BattleShip
                                     for (int x = gridReference[0]; x < gridReference[0] + inPlayerShips[ship]._shipLength; x++)
                                     {
                                         inGameBoard._boardLayout[x, gridReference[1]] = "V";
+                                        inPlayerShips[ship].RowPosition[x - gridReference[0]] = x;
+                                        inPlayerShips[ship].ColumnPosition[x - gridReference[0]] = gridReference[1];
                                     }
                                     shipPlaced = true;
                                 }
@@ -291,6 +357,8 @@ namespace BattleShip
                                     for (int x = gridReference[0]; x > gridReference[0] - inPlayerShips[ship]._shipLength; x--)
                                     {
                                         inGameBoard._boardLayout[x, gridReference[1]] = "V";
+                                        inPlayerShips[ship].RowPosition[gridReference[0] - x] = x;
+                                        inPlayerShips[ship].ColumnPosition[gridReference[0] - x] = gridReference[1];
                                     }
                                     shipPlaced = true;
                                 }
